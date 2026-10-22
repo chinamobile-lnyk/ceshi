@@ -212,15 +212,15 @@
         </div>
 
         <div class="form-group">
-            <label>2. 是否符合新增自然人</label>
+            <label>2. 主卡是否新增自然人</label>
             <div class="grid-select cols-2" id="grid_n_nat">
-                <div class="grid-item active" onclick="setNewState('nat', true, this)">符合</div>
-                <div class="grid-item" onclick="setNewState('nat', false, this)">不符合</div>
+                <div class="grid-item active" onclick="setNewState('nat', true, this)">是</div>
+                <div class="grid-item" onclick="setNewState('nat', false, this)">否</div>
             </div>
         </div>
 
         <div class="form-group">
-            <label>3. 是否符合完美一单</label>
+            <label>3. 是否符合完美一单（宽+2副卡）</label>
             <div class="grid-select cols-2" id="grid_n_per">
                 <div class="grid-item active" onclick="setNewState('per', true, this)">符合</div>
                 <div class="grid-item" onclick="setNewState('per', false, this)">不符合</div>
@@ -298,7 +298,7 @@
             <div class="detail-row"><span>激励③ 新增自然人激励</span><span class="val" id="n_d3">--</span></div>
             <div class="detail-row"><span>激励④ 完美一单激励</span><span class="val" id="n_d4">--</span></div>
             <div id="n_hqDetailBox" style="display:none;">
-                <div class="detail-row danger"><span>※ 高质量考核金额</span><span class="val" id="n_d_hq">--</span></div>
+                <div class="detail-row danger"><span>※ 爱家回馈高质量考核金额</span><span class="val" id="n_d_hq">--</span></div>
             </div>
         </div>
     </div>
@@ -443,7 +443,7 @@
             <div class="detail-row"><span>激励③ 完美一单激励</span><span class="val" id="s_d3">--</span></div>
             <div class="detail-row sub"><span>本单最高激励 × 副卡系数 × 宽带系数 × 和包系数</span><span class="val" id="s_d3_sub">--</span></div>
             <div id="s_hqDetailBox">
-                <div class="detail-row danger"><span>※ 高质量考核金额</span><span class="val" id="s_d_hq">--</span></div>
+                <div class="detail-row danger"><span>※ 爱家回馈高质量考核金额</span><span class="val" id="s_d_hq">--</span></div>
             </div>
         </div>
     </div>

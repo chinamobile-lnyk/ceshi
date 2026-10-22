@@ -11,7 +11,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 12px; /* 缩小手机端外边距 */
+            padding: 12px;
             margin: 0;
             display: flex;
             align-items: center;
@@ -79,7 +79,6 @@
         .form-group { margin-bottom: 12px; }
         label { display: block; font-weight: 600; color: #444; font-size: 13px; margin-bottom: 5px; }
         
-        /* 输入框更紧凑 */
         input[type="number"] {
             width: 100%; padding: 10px 12px; font-size: 15px; font-weight: bold;
             border: 2px solid #e0e0e0; border-radius: 10px; background: #f8f9fa;
@@ -87,7 +86,6 @@
         }
         input[type="number"]:focus { outline: none; border-color: #667eea; background: white; }
         
-        /* 网格选择器更紧凑 */
         .grid-select { display: grid; gap: 5px; }
         .grid-select.cols-5 { grid-template-columns: repeat(5, 1fr); }
         .grid-select.cols-4 { grid-template-columns: repeat(4, 1fr); }
@@ -105,7 +103,7 @@
         .dynamic-area { display: none; }
         .dynamic-area.show { display: block; }
 
-        /* ==================== 高质量考核区（适配手机单行） ==================== */
+        /* ==================== 高质量考核区 ==================== */
         .high-quality-section {
             display: none; background: #fafbff; border: 1px solid #eef0f8;
             border-radius: 12px; padding: 12px; margin-bottom: 15px;
@@ -117,25 +115,21 @@
             display: flex; align-items: center; justify-content: space-between;
         }
         
-        /* 单行布局：左边文字，右边按钮 */
         .quality-row { 
             display: flex; align-items: center; justify-content: space-between; 
             padding: 6px 0; border-bottom: 1px dashed #eee; 
         }
         .quality-row:last-child { border-bottom: none; padding-bottom: 0; }
         
-        /* 左边文字与问号 */
         .quality-label-wrap { display: flex; align-items: center; gap: 6px; }
         .quality-name { font-size: 13px; font-weight: 600; color: #444; white-space: nowrap;}
         
-        /* 问号按钮 */
         .info-btn {
             width: 16px; height: 16px; border-radius: 50%; border: none;
             background: #aab4d4; color: white; font-size: 10px; font-weight: bold;
             cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center;
         }
         
-        /* 右边按钮组（禁止换行） */
         .quality-options { display: flex; gap: 4px; flex-shrink: 0; }
         .quality-options .grid-item { 
             padding: 5px 10px; font-size: 12px; border-radius: 6px; border-width: 1px;
@@ -156,6 +150,13 @@
         .detail-row.sub { font-size: 11px; color: #999; padding: 3px 0; border-bottom: none; }
         .detail-row.danger { color: #e74c3c; font-weight: bold; margin-top: 6px; border-top: 1px solid #ffeeee; padding-top: 8px;}
         .detail-row.danger .val { color: #e74c3c; }
+
+        /* ==================== 底部提示 ==================== */
+        .notice-text {
+            text-align: center; font-size: 12px; color: #ff4d4f; 
+            margin-top: 16px; padding-top: 12px; border-top: 1px dashed #ffe0e0;
+            font-weight: 600;
+        }
 
         /* ==================== 悬浮提示 ==================== */
         .tooltip {
@@ -212,7 +213,15 @@
         </div>
 
         <div class="form-group">
-            <label>2. 主卡是否新增自然人</label>
+            <label>2. 宽带状态</label>
+            <div class="grid-select cols-2" id="grid_n_bb">
+                <div class="grid-item active" onclick="setNewState('bb', '同装', this)">同装宽带</div>
+                <div class="grid-item" onclick="setNewState('bb', '未办', this)">未办宽带</div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>3. 主卡是否新增自然人</label>
             <div class="grid-select cols-2" id="grid_n_nat">
                 <div class="grid-item active" onclick="setNewState('nat', true, this)">是</div>
                 <div class="grid-item" onclick="setNewState('nat', false, this)">否</div>
@@ -220,7 +229,7 @@
         </div>
 
         <div class="form-group">
-            <label>3. 是否符合完美一单（宽+2副卡）</label>
+            <label>4. 是否符合完美一单（宽+2副）</label>
             <div class="grid-select cols-2" id="grid_n_per">
                 <div class="grid-item active" onclick="setNewState('per', true, this)">符合</div>
                 <div class="grid-item" onclick="setNewState('per', false, this)">不符合</div>
@@ -228,7 +237,7 @@
         </div>
 
         <div class="form-group" style="border-top: 1px solid #f0f0f0; padding-top: 12px;">
-            <label>4. 是否办理爱家回馈合约</label>
+            <label>5. 是否办理爱家回馈合约</label>
             <div class="grid-select cols-2" id="grid_n_hq">
                 <div class="grid-item active" onclick="setNewState('hq', false, this)">未办理</div>
                 <div class="grid-item" onclick="setNewState('hq', true, this)">已办理</div>
@@ -298,9 +307,12 @@
             <div class="detail-row"><span>激励③ 新增自然人激励</span><span class="val" id="n_d3">--</span></div>
             <div class="detail-row"><span>激励④ 完美一单激励</span><span class="val" id="n_d4">--</span></div>
             <div id="n_hqDetailBox" style="display:none;">
-                <div class="detail-row danger"><span>※ 爱家回馈高质量考核金额</span><span class="val" id="n_d_hq">--</span></div>
+                <div class="detail-row danger"><span>※ 高质量考核金额</span><span class="val" id="n_d_hq">--</span></div>
             </div>
         </div>
+        
+        <!-- 底部提示 -->
+        <div class="notice-text">※ 自由选、49随心卡、短时卡品不适用本规则</div>
     </div>
 
     <!-- ==================== 存量合约计算器 ==================== -->
@@ -316,11 +328,11 @@
         </div>
         <div class="form-group">
             <label>2. 主卡拍照价值（元）</label>
-            <input type="number" id="s_main" placeholder="请输入主卡价值" step="0.01" min="0" oninput="calcStock()">
+            <input type="number" id="s_main" placeholder="请输入主卡拍照价值" step="0.01" min="0" oninput="calcStock()">
         </div>
         <div class="form-group">
             <label>3. 副卡拍照价值（元）</label>
-            <input type="number" id="s_sub" placeholder="请输入副卡价值" step="0.01" min="0" oninput="calcStock()">
+            <input type="number" id="s_sub" placeholder="请输入副卡拍照价值" step="0.01" min="0" oninput="calcStock()">
         </div>
 
         <div class="form-group">
@@ -443,9 +455,10 @@
             <div class="detail-row"><span>激励③ 完美一单激励</span><span class="val" id="s_d3">--</span></div>
             <div class="detail-row sub"><span>本单最高激励 × 副卡系数 × 宽带系数 × 和包系数</span><span class="val" id="s_d3_sub">--</span></div>
             <div id="s_hqDetailBox">
-                <div class="detail-row danger"><span>※ 爱家回馈高质量考核金额</span><span class="val" id="s_d_hq">--</span></div>
+                <div class="detail-row danger"><span>※ 高质量考核金额</span><span class="val" id="s_d_hq">--</span></div>
             </div>
         </div>
+        
     </div>
 </div>
 
@@ -464,7 +477,6 @@
 
     const tooltip = document.getElementById("tooltip");
     
-    // 点击手机屏幕其它区域关闭提示框
     document.addEventListener("click", (ev) => {
         if (!ev.target.closest(".info-btn") && !ev.target.closest(".tooltip")) {
             tooltip.classList.remove("show");
@@ -472,7 +484,6 @@
     });
     window.addEventListener("scroll", () => tooltip.classList.remove("show"), true);
 
-    // 绑定所有问号按钮
     document.querySelectorAll(".info-btn").forEach(btn => {
         btn.addEventListener("click", (ev) => {
             ev.stopPropagation();
@@ -482,15 +493,11 @@
             tooltip.classList.add("show");
             
             const rect = btn.getBoundingClientRect();
-            let left = rect.left - 20; // 偏移居中
+            let left = rect.left - 20;
             let top = rect.bottom + 8;
-            
-            // 防止超出屏幕右边
             if (left + tooltip.offsetWidth > window.innerWidth - 10) left = window.innerWidth - tooltip.offsetWidth - 10;
             if (left < 10) left = 10;
-            // 防止超出屏幕下边
             if (top + tooltip.offsetHeight > window.innerHeight - 10) top = rect.top - tooltip.offsetHeight - 8;
-            
             tooltip.style.left = left + "px";
             tooltip.style.top = top + "px";
         });
@@ -515,7 +522,7 @@
     /* ============================================================
        一、新入网 计算逻辑
        ============================================================ */
-    let nState = { nat: true, per: true, hq: false };
+    let nState = { bb: '同装', nat: true, per: true, hq: false };
     let nHqStatus = { yc: true, qq: true, '239': true, hb: true, yj: true };
 
     function setNewState(key, value, el) {
@@ -547,7 +554,12 @@
         }
 
         let inc1 = 10;
-        let inc2 = Math.min(fee, 199);
+        
+        // 激励2：入网档位激励。如果是未办宽带，系数乘 0.5
+        let baseInc2 = Math.min(fee, 199);
+        let k_bb_inc2 = (nState.bb === '未办') ? 0.5 : 1;
+        let inc2 = baseInc2 * k_bb_inc2;
+
         let inc3 = nState.nat ? (3 * Math.min(fee < 33 ? 33 : fee, 199)) : 0;
         let inc4 = 0;
         if (nState.per) {
@@ -570,13 +582,22 @@
         if (nState.hq && !nHqStatus['239']) finalTotal = hqDeduction;
 
         totalEl.innerHTML = `💰 ${fmt(finalTotal)} 元`;
+        
         document.getElementById('n_d1').innerText = fmt(inc1) + " 元";
-        document.getElementById('n_d2').innerText = fmt(inc2) + " 元" + (fee > 199 ? " (封顶)" : "");
+        
+        // 明细显示，如果是未办宽带，加个提示
+        let inc2Text = fmt(inc2) + " 元";
+        let notes2 = [];
+        if (fee > 199) notes2.push("封顶");
+        if (k_bb_inc2 === 0.5) notes2.push("未办宽打5折");
+        if (notes2.length > 0) inc2Text += ` (${notes2.join('，')})`;
+        document.getElementById('n_d2').innerText = inc2Text;
+        
         document.getElementById('n_d3').innerText = fmt(inc3) + " 元" + (nState.nat ? (fee < 33 ? " (保底)" : fee > 199 ? " (封顶)" : "") : " (不符合)");
         document.getElementById('n_d4').innerText = fmt(inc4) + " 元" + (nState.per ? (fee < 99 ? " (未达标)" : (fee >= 199 && 4 * fee > 796 ? " (封顶)" : "")) : " (不符合)");
         
         if (nState.hq) {
-            document.getElementById('n_d_hq').innerText = hqDeduction + " 元" + (!nHqStatus['239'] ? " (239档位不符，全额扣除)" : "");
+            document.getElementById('n_d_hq').innerText = hqDeduction + " 元" + (!nHqStatus['239'] ? " (239档位不符，全额扣除已获激励且考核)" : "");
         }
         detailBox.className = "detail-box show";
     }
@@ -632,7 +653,7 @@
         let cappedDiff = Math.max(0, Math.min(rawDiff, 199));
         
         let inc1 = 0;
-        if  (mainVal < 50 && rawDiff < 5) inc1 =0;
+         if  (mainVal < 50 && rawDiff < 5) inc1 =0;
 
  else if (mainVal < 50 && rawDiff >= 5) inc1 = 10;
         else if (mainVal < 80) inc1 = 40;
@@ -672,7 +693,7 @@
         document.getElementById('s_d3_sub').innerText = `${fmt(maxInc3)} × ${k_cards} × ${k_bb} × ${k_hb}`;
         
         if (sState.type === '回馈') {
-            document.getElementById('s_d_hq').innerText = hqDeduction + " 元" + (!sHqStatus['239'] ? " (239档位不符，全额扣除)" : "");
+            document.getElementById('s_d_hq').innerText = hqDeduction + " 元" + (!sHqStatus['239'] ? " (239档位不符，全额扣除已获激励且考核)" : "");
         }
         detailBox.className = "detail-box show";
     }

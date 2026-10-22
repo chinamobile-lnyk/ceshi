@@ -632,9 +632,12 @@
         let cappedDiff = Math.max(0, Math.min(rawDiff, 199));
         
         let inc1 = 0;
-        if (mainVal < 50 && rawDiff >= 5) inc1 = 10;
+        if  (mainVal < 50 && rawDiff < 5) inc1 =0;
+
+ else if (mainVal < 50 && rawDiff >= 5) inc1 = 10;
         else if (mainVal < 80) inc1 = 40;
         else inc1 = 60;
+
 
         let inc2 = 4 * cappedDiff;
 

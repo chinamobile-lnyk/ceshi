@@ -213,10 +213,11 @@
         </div>
 
         <div class="form-group">
-            <label>2. 宽带状态</label>
-            <div class="grid-select cols-2" id="grid_n_bb">
-                <div class="grid-item active" onclick="setNewState('bb', '同装', this)">同装宽带</div>
-                <div class="grid-item" onclick="setNewState('bb', '未办', this)">未办宽带</div>
+            <label>2. 套餐及宽带状态</label>
+            <div class="grid-select cols-3" id="grid_n_bb">
+                <div class="grid-item" onclick="setNewState('bb', '单卡', this)">单卡</div>
+                <div class="grid-item active" onclick="setNewState('bb', '融合且已装', this)">融合套餐且已装宽带</div>
+                <div class="grid-item" onclick="setNewState('bb', '融合但未办', this)">融合套餐但未办宽带</div>
             </div>
         </div>
 
@@ -229,7 +230,7 @@
         </div>
 
         <div class="form-group">
-            <label>4. 是否符合完美一单（宽+2副）</label>
+            <label>4. 是否符合完美一单（宽+2副卡）</label>
             <div class="grid-select cols-2" id="grid_n_per">
                 <div class="grid-item active" onclick="setNewState('per', true, this)">符合</div>
                 <div class="grid-item" onclick="setNewState('per', false, this)">不符合</div>
@@ -328,11 +329,11 @@
         </div>
         <div class="form-group">
             <label>2. 主卡拍照价值（元）</label>
-            <input type="number" id="s_main" placeholder="请输入主卡拍照价值" step="0.01" min="0" oninput="calcStock()">
+            <input type="number" id="s_main" placeholder="请输入主卡价值" step="0.01" min="0" oninput="calcStock()">
         </div>
         <div class="form-group">
             <label>3. 副卡拍照价值（元）</label>
-            <input type="number" id="s_sub" placeholder="请输入副卡拍照价值" step="0.01" min="0" oninput="calcStock()">
+            <input type="number" id="s_sub" placeholder="请输入副卡价值" step="0.01" min="0" oninput="calcStock()">
         </div>
 
         <div class="form-group">
@@ -458,7 +459,7 @@
                 <div class="detail-row danger"><span>※ 高质量考核金额</span><span class="val" id="s_d_hq">--</span></div>
             </div>
         </div>
-        
+
     </div>
 </div>
 
@@ -522,7 +523,7 @@
     /* ============================================================
        一、新入网 计算逻辑
        ============================================================ */
-    let nState = { bb: '同装', nat: true, per: true, hq: false };
+    let nState = { bb: '融合且已装', nat: true, per: true, hq: false };
     let nHqStatus = { yc: true, qq: true, '239': true, hb: true, yj: true };
 
     function setNewState(key, value, el) {
@@ -555,9 +556,9 @@
 
         let inc1 = 10;
         
-        // 激励2：入网档位激励。如果是未办宽带，系数乘 0.5
+        // 激励2：入网档位激励。如果是“融合但未办”，系数乘 0.5
         let baseInc2 = Math.min(fee, 199);
-        let k_bb_inc2 = (nState.bb === '未办') ? 0.5 : 1;
+        let k_bb_inc2 = (nState.bb === '融合但未办') ? 0.5 : 1;
         let inc2 = baseInc2 * k_bb_inc2;
 
         let inc3 = nState.nat ? (3 * Math.min(fee < 33 ? 33 : fee, 199)) : 0;
@@ -585,11 +586,11 @@
         
         document.getElementById('n_d1').innerText = fmt(inc1) + " 元";
         
-        // 明细显示，如果是未办宽带，加个提示
+        // 明细显示，如果是融合但未办，加个提示
         let inc2Text = fmt(inc2) + " 元";
         let notes2 = [];
         if (fee > 199) notes2.push("封顶");
-        if (k_bb_inc2 === 0.5) notes2.push("未办宽打5折");
+        if (k_bb_inc2 === 0.5) notes2.push("融合但未办宽带打5折");
         if (notes2.length > 0) inc2Text += ` (${notes2.join('，')})`;
         document.getElementById('n_d2').innerText = inc2Text;
         
@@ -597,7 +598,7 @@
         document.getElementById('n_d4').innerText = fmt(inc4) + " 元" + (nState.per ? (fee < 99 ? " (未达标)" : (fee >= 199 && 4 * fee > 796 ? " (封顶)" : "")) : " (不符合)");
         
         if (nState.hq) {
-            document.getElementById('n_d_hq').innerText = hqDeduction + " 元" + (!nHqStatus['239'] ? " (239档位不符，全额扣除已获激励且考核)" : "");
+            document.getElementById('n_d_hq').innerText = hqDeduction + " 元" + (!nHqStatus['239'] ? " (239档位不符，全额扣除)" : "");
         }
         detailBox.className = "detail-box show";
     }
@@ -693,7 +694,7 @@
         document.getElementById('s_d3_sub').innerText = `${fmt(maxInc3)} × ${k_cards} × ${k_bb} × ${k_hb}`;
         
         if (sState.type === '回馈') {
-            document.getElementById('s_d_hq').innerText = hqDeduction + " 元" + (!sHqStatus['239'] ? " (239档位不符，全额扣除已获激励且考核)" : "");
+            document.getElementById('s_d_hq').innerText = hqDeduction + " 元" + (!sHqStatus['239'] ? " (239档位不符，全额扣除)" : "");
         }
         detailBox.className = "detail-box show";
     }

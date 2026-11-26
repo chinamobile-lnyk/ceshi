@@ -78,6 +78,7 @@
 
         .form-group { margin-bottom: 12px; }
         label { display: block; font-weight: 600; color: #444; font-size: 13px; margin-bottom: 5px; }
+        .label-hint { font-weight: normal; color: #999; font-size: 11px; }
         
         input[type="number"] {
             width: 100%; padding: 10px 12px; font-size: 15px; font-weight: bold;
@@ -100,13 +101,14 @@
         }
         .grid-item.active { background: #667eea; border-color: #667eea; color: white; }
 
-        .dynamic-area { display: none; }
+        .dynamic-area { display: none; animation: fadeIn 0.3s; }
         .dynamic-area.show { display: block; }
 
         /* ==================== 高质量考核区 ==================== */
         .high-quality-section {
             display: none; background: #fafbff; border: 1px solid #eef0f8;
             border-radius: 12px; padding: 12px; margin-bottom: 15px;
+            animation: fadeIn 0.3s;
         }
         .high-quality-section.show { display: block; }
         
@@ -364,17 +366,22 @@
             </div>
         </div>
 
+        <!-- 爱家回馈和包额度 (精简为 0 和 360) -->
         <div class="form-group dynamic-area show" id="s_area_hb">
             <label>7. 爱家回馈和包额度</label>
-            <div class="grid-select cols-5" id="grid_s_hb">
+            <div class="grid-select cols-2" id="grid_s_hb">
                 <div class="grid-item active" onclick="setStockState('hb', 0, this)">0(未选)</div>
-                <div class="grid-item" onclick="setStockState('hb', 180, this)">180</div>
                 <div class="grid-item" onclick="setStockState('hb', 360, this)">360</div>
-                <div class="grid-item" onclick="setStockState('hb', 650, this)">650</div>
-                <div class="grid-item" onclick="setStockState('hb', 800, this)">800</div>
             </div>
         </div>
 
+        <!-- 爱家回馈AI豆额度 -->
+        <div class="form-group dynamic-area show" id="s_area_aidou">
+            <label>8. 爱家回馈AI豆 <span class="label-hint">(合约期间总额度)</span></label>
+            <input type="number" id="s_aidou" placeholder="请输入AI豆额度" min="0" step="1" oninput="calcStock()">
+        </div>
+
+        <!-- 爱家终端金币额度 -->
         <div class="form-group dynamic-area" id="s_area_zd">
             <label>7. 终端金币额度</label>
             <div class="grid-select cols-4" id="grid_s_zd">
@@ -453,6 +460,7 @@
             <div class="detail-row"><span>激励① 档位激励</span><span class="val" id="s_d1">--</span></div>
             <div class="detail-row"><span>激励② 价值提升激励</span><span class="val" id="s_d2">--</span></div>
             <div class="detail-row sub"><span>价值提升值 = 实收-主卡-副卡-月均优惠</span><span class="val" id="s_d2_sub">--</span></div>
+            <div class="detail-row sub"><span>月均优惠 = (和包/36) + (AI豆/100/36)</span><span class="val" id="s_d2_monthly">--</span></div>
             <div class="detail-row"><span>激励③ 完美一单激励</span><span class="val" id="s_d3">--</span></div>
             <div class="detail-row sub"><span>本单最高激励 × 副卡系数 × 宽带系数 × 和包系数</span><span class="val" id="s_d3_sub">--</span></div>
             <div id="s_hqDetailBox">
@@ -469,11 +477,11 @@
 <script>
     // ==================== 全局悬浮提示 ====================
     const TIPS = {
-        "预存礼": { title: "📌 预存礼", body: "具体要求：办理爱家套餐回馈礼必须同时办理专属预存120元活动。\n两个例外可不办预存活动：①XR客户办理爱家回馈礼②无宽带客户办理爱家宽带", kpi: "考核标准：搭载率达到90%，对不足部分，按照50元/笔考核。" },
-        "亲情网": { title: "📌 亲情网", body: "具体要求：办爱家回馈需办理有效亲情网（主副成员数≥2）。", kpi: "考核标准：搭载率达到90%，对不足部分，按照50元/笔考核。" },
-        "239档位": { title: "📌 239及以上档位", body: "具体要求：仅以下三种场景可办：\n①主、副号码拍照价值之和<套餐档位，保证升档办理。\n②拉新、C类客户两类客户办理。\n③在控损的申销、携转挽留场景，需经归属县区领导审批通过后，公务报备市公司。", kpi: "考核标准：非三类场景办理，按200元/笔考核，并回扣相关渠道费用。" },
-        "和包业务包": { title: "📌 和包+业务包", body: "具体要求：办理爱家回馈的和包券活动，必须办理对应权益业务：\n①180档位：必办辽宁会生活半年包或随心行会员半年包（互斥则办咪咕足球）。\n②360档位：必办车主/生活会员享流量季卡120元。\n③650及800档位：必办车主/生活会员享流量季卡240元。", kpi: "考核标准：不符合条件，按100元/笔考核。" },
-        "硬件搭载": { title: "📌 硬件搭载", body: "具体要求：需满足以下所有硬件要求，任一不符合即判定不符合：\n（1）新办硬件权益。\n（2）139以下档位有宽客户，必搭组网，已有组网必搭高清，已有高清必搭安防。\n（3）139及以上有宽客户，必搭组网+高清，已有高清必搭安防。\n（4）139及以上无宽客户，必搭安防。", kpi: "考核标准：合格率达到90%，对不足部分按200元/笔考核。" }
+        "预存礼": { title: "📌 预存礼", body: "具体要求：***************", kpi: "考核标准：****************************" },
+        "亲情网": { title: "📌 亲情网", body: "具体要求：****************", kpi: "考核标准：************" },
+        "239档位": { title: "📌 239及以上档位", body:  "具体要求：****************", kpi: "考核标准：************" },
+        "和包业务包": { title: "📌 和包+业务包", body:  "具体要求：****************", kpi: "考核标准：************" },
+        "硬件搭载": { title: "📌 硬件搭载", body:"具体要求：****************", kpi: "考核标准：************" }
     };
 
     const tooltip = document.getElementById("tooltip");
@@ -556,7 +564,6 @@
 
         let inc1 = 10;
         
-        // 激励2：入网档位激励。如果是“融合但未办”，系数乘 0.5
         let baseInc2 = Math.min(fee, 199);
         let k_bb_inc2 = (nState.bb === '融合但未办') ? 0.5 : 1;
         let inc2 = baseInc2 * k_bb_inc2;
@@ -575,7 +582,7 @@
             if (!nHqStatus.yc) hqDeduction -= 50;
             if (!nHqStatus.qq) hqDeduction -= 50;
             if (!nHqStatus['239']) hqDeduction -= 200;
-            if (!nHqStatus.hb) hqDeduction -= 100;
+            if (!nHqStatus.hb) hqDeduction -= 200;
             if (!nHqStatus.yj) hqDeduction -= 200;
         }
 
@@ -586,7 +593,6 @@
         
         document.getElementById('n_d1').innerText = fmt(inc1) + " 元";
         
-        // 明细显示，如果是融合但未办，加个提示
         let inc2Text = fmt(inc2) + " 元";
         let notes2 = [];
         if (fee > 199) notes2.push("封顶");
@@ -615,11 +621,13 @@
         if (key === 'type') {
             if (value === '回馈') {
                 document.getElementById('s_area_hb').classList.add('show');
+                document.getElementById('s_area_aidou').classList.add('show');
                 document.getElementById('s_area_zd').classList.remove('show');
                 document.getElementById('s_hqSection').classList.add('show');
                 document.getElementById('s_hqDetailBox').style.display = 'block';
             } else {
                 document.getElementById('s_area_hb').classList.remove('show');
+                document.getElementById('s_area_aidou').classList.remove('show');
                 document.getElementById('s_area_zd').classList.add('show');
                 document.getElementById('s_hqSection').classList.remove('show');
                 document.getElementById('s_hqDetailBox').style.display = 'none';
@@ -648,21 +656,34 @@
             return;
         }
 
-        let currentQuota = sState.type === '回馈' ? sState.hb : sState.zd;
-        let discount = currentQuota / 36;
-        let rawDiff = fee - mainVal - subVal - discount;
+        // 计算月均优惠
+        let discountHb = 0;
+        let discountAidou = 0;
+        if (sState.type === '回馈') {
+            discountHb = sState.hb / 36;
+            const aidouVal = parseFloat(document.getElementById('s_aidou').value);
+            if (!isNaN(aidouVal) && aidouVal > 0) {
+                discountAidou = aidouVal / 100 / 36;
+            }
+        } else {
+            discountHb = sState.zd / 36; // 终端金币额度
+        }
+        
+        let totalDiscount = discountHb + discountAidou;
+        let rawDiff = fee - mainVal - subVal - totalDiscount;
         let cappedDiff = Math.max(0, Math.min(rawDiff, 199));
         
+        // 激励1
         let inc1 = 0;
-         if  (mainVal < 50 && rawDiff < 5) inc1 =0;
-
- else if (mainVal < 50 && rawDiff >= 5) inc1 = 10;
+        if (mainVal < 50 && rawDiff < 5) inc1 = 0;
+        else if (mainVal < 50 && rawDiff >= 5) inc1 = 10;
         else if (mainVal < 80) inc1 = 40;
         else inc1 = 60;
 
-
+        // 激励2
         let inc2 = 4 * cappedDiff;
 
+        // 激励3
         let maxInc3 = 0;
         if (fee >= 99 && fee < 139) maxInc3 = 2 * fee;
         else if (fee >= 139 && fee < 199) maxInc3 = 2.5 * fee;
@@ -670,26 +691,36 @@
 
         let k_cards = sState.cards < 2 ? 0 : 1;
         let k_bb = sState.broadband === '不办宽带' ? 0 : (sState.broadband === '存量宽带' ? 0.7 : 1);
-        let k_hb = (sState.type === '回馈' && sState.hb > 0) ? 0.9 : 1;
+        let k_hb = (sState.type === '回馈' && sState.hb > 0) ? 0.7 : 1;
         let inc3 = maxInc3 * k_cards * k_bb * k_hb;
 
         let baseTotal = inc1 + inc2 + inc3;
+        
+        // 高质量考核扣减
         let hqDeduction = 0;
         if (sState.type === '回馈') {
             if (!sHqStatus.yc) hqDeduction -= 50;
             if (!sHqStatus.qq) hqDeduction -= 50;
             if (!sHqStatus['239']) hqDeduction -= 200;
-            if (!sHqStatus.hb) hqDeduction -= 100;
+            if (!sHqStatus.hb) hqDeduction -= 200;
             if (!sHqStatus.yj) hqDeduction -= 200;
         }
 
         let finalTotal = baseTotal + hqDeduction;
         if (sState.type === '回馈' && !sHqStatus['239']) finalTotal = hqDeduction;
 
+        // 渲染输出
         totalEl.innerHTML = `💰 ${fmt(finalTotal)} 元`;
         document.getElementById('s_d1').innerText = fmt(inc1) + " 元";
         document.getElementById('s_d2').innerText = fmt(inc2) + " 元" + (rawDiff > 199 ? " (已封顶)" : "");
         document.getElementById('s_d2_sub').innerText = `${fmt(rawDiff)} 元`;
+        
+        let monthlyText = `${fmt(discountHb)} 元`;
+        if (discountAidou > 0) {
+            monthlyText += ` + ${fmt(discountAidou)} 元(AI豆) = ${fmt(totalDiscount)} 元`;
+        }
+        document.getElementById('s_d2_monthly').innerText = monthlyText;
+
         document.getElementById('s_d3').innerText = fmt(inc3) + " 元";
         document.getElementById('s_d3_sub').innerText = `${fmt(maxInc3)} × ${k_cards} × ${k_bb} × ${k_hb}`;
         
